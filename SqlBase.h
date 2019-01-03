@@ -56,11 +56,13 @@ public:
         std::vector<tableRow> completeData;
     };
 
+    QString getTypesString(tableColumns table);
+
     // connect/create database
-    virtual bool connectDatabase() = 0;
+    virtual bool connectDatabase(QString name = 0, QString user = 0, QString password = 0) = 0;
 
     // create table
-    virtual bool createTable(QString name, tableColumns table) = 0;
+    virtual void createTable(QString name, tableColumns table) = 0;
 
     // add new row to table
     virtual bool insertValue(tableRow rowValues, QString tableName = 0) = 0;
