@@ -26,15 +26,15 @@ public:
         INTEGER,
         FLOAT,
         TEXT,
-        DATA
+        DATE
     };
 
     struct singleColumn
     {
-        QString itemType;
+        EItemType itemType;
         QString itemName;
 
-        singleColumn(QString itemType, QString itemName)
+        singleColumn(EItemType itemType, QString itemName)
         {
             this->itemType = itemType;
             this->itemName = itemName;
@@ -56,13 +56,11 @@ public:
         std::vector<tableRow> completeData;
     };
 
-    QString getTypesString(tableColumns table);
-
     // connect/create database
     virtual bool connectDatabase(QString name = 0, QString user = 0, QString password = 0) = 0;
 
     // create table
-    virtual void createTable(QString name, tableColumns table) = 0;
+    virtual void createTable(QString name, tableColumns table, bool uniqueValues) = 0;
 
     // add new row to table
     virtual bool insertValue(tableRow rowValues, QString tableName = 0) = 0;
@@ -89,6 +87,14 @@ public:
 
     // get specific data type
     virtual QString getType(EItemType type, int textMaxLenght = 0) = 0;
+
+    //virtual QString getTypesString(tableColumns table) = 0;
+
+protected:
+    virtual unsigned int getColumnNumber(QString tableName) = 0;
+    virtual QString getColumnNames(QString tableName, bool valuePrepare = false) = 0;
+    QString getTypesString(tableColumns table);
+    QString getColumnsString(tableColumns table);
 
 public:
     QString m_lastCreatedTableName;

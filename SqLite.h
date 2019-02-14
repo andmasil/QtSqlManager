@@ -9,7 +9,7 @@ public:
     SqLite();
 
     bool connectDatabase(QString name = 0, QString user = 0, QString password = 0);
-    void createTable(QString name, tableColumns table);
+    void createTable(QString name, tableColumns table, bool uniqueValues);
     bool insertValue(tableRow rowValues, QString tableName = 0);
     bool removeValue(QString column, QString value, QString tableName = 0);
     bool removeValue(int index, QString tableName = 0);
@@ -21,8 +21,12 @@ public:
     bool isExist(QString column, QString value, QString tableName = 0);
     QString getType(EItemType type, int textMaxLenght = 0);
 
+protected:
+    unsigned int getColumnNumber(QString tableName);
+    QString getColumnNames(QString tableName, bool valuePrepare = false);
+
+
 private:
-    connectToDatabase();
 };
 
 #endif // SQLITE_H
