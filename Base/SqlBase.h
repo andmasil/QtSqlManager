@@ -29,6 +29,20 @@ public:
         DATE
     };
 
+    struct databaseInfo
+    {
+        QString name;
+        QString user;
+        QString password;
+
+        databaseInfo(QString name = 0, QString user = 0, QString password = 0)
+        {
+            this->name = name;
+            this->user = user;
+            this->password = password;
+        }
+    };
+
     struct singleColumn
     {
         EItemType itemType;
@@ -57,7 +71,7 @@ public:
     };
 
     // connect/create database
-    virtual bool connectDatabase(QString name = 0, QString user = 0, QString password = 0) = 0;
+    virtual bool connectDatabase(databaseInfo info) = 0;
 
     // create table
     virtual void createTable(QString name, tableColumns table, bool uniqueValues) = 0;

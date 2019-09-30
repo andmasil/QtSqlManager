@@ -5,14 +5,14 @@ SqLite::SqLite()
 
 }
 
-bool SqLite::connectDatabase(QString name, QString user, QString password)
+bool SqLite::connectDatabase(databaseInfo info)
 {
     bool result = false;
 
-    if (nullptr != name)
+    if (nullptr != info.name)
     {
         QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-        db.setDatabaseName(name);
+        db.setDatabaseName(info.name);
         if(!db.open())
         {
             qWarning() << "SqLite open/create failed: " << db.lastError();

@@ -8,7 +8,7 @@ class SqLite : public SqlBase
 public:
     SqLite();
 
-    bool connectDatabase(QString name = 0, QString user = 0, QString password = 0);
+    bool connectDatabase(databaseInfo info);
     void createTable(QString name, tableColumns table, bool uniqueValues);
     bool insertValue(tableRow rowValues, QString tableName = 0);
     bool removeValue(QString column, QString value, QString tableName = 0);

@@ -2,15 +2,18 @@
 #include <QDateTime>
 
 #include "Base/SqLite.h"
+#include "Interface/DatabaseInterface.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
     //SQLite tests
-    SqLite sqlite;
+    SqlBase::databaseInfo info;
+    info.name = "test.db";
+    DatabaseInterface sqlite(DatabaseInterface::QSQLITE, info);
     const QString tableName = "TestTable";
-    sqlite.connectDatabase("test.db");
+    sqlite.connectDatabase(info);
     SqlBase::tableColumns table;
     table.tableHeader.push_back(SqlBase::singleColumn(SqlBase::ID, "id"));
     table.tableHeader.push_back(SqlBase::singleColumn(SqlBase::TEXT, "name"));
@@ -44,6 +47,9 @@ int main(int argc, char *argv[])
     sqlite.isExist("id", "1");
     sqlite.isExist("id", "1111111");
     qDebug() << "----------------------------------------------------------------";
+    sqlite.isExist("name", "danny");
+    sqlite.isExist("id", "20");
+    qDebug() << "----------------------------------------------------------------";
     sqlite.isExist("name", "data1");
     sqlite.isExist("name", "data1111");
     qDebug() << "----------------------------------------------------------------";
@@ -57,10 +63,10 @@ int main(int argc, char *argv[])
     sqlite.removeValue("name", "data1111data1111");
     qDebug() << "----------------------------------------------------------------";
     SqlBase::dataTable completeTable = sqlite.getAllData();
-    for (int i = 0; i < completeTable.completeData.size(); ++i)
+    for (unsigned int i = 0; i < completeTable.completeData.size(); ++i)
     {
         qDebug() << i+1;
-        for (int j = 0; j < completeTable.completeData.at(i).completeRow.size(); ++j)
+        for (unsigned int j = 0; j < completeTable.completeData.at(i).completeRow.size(); ++j)
         {
             qDebug() << completeTable.completeData.at(i).completeRow.at(j);
         }
