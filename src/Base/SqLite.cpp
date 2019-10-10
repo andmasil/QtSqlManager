@@ -81,6 +81,7 @@ bool SqLite::insertValue(SqlBase::tableRow rowValues, QString tableName)
         else
         {
             qDebug() << "Inserted " << rowValues.completeRow.at(0);
+            result = true;
         }
     }
     else
