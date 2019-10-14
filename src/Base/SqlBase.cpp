@@ -1,5 +1,10 @@
 #include "SqlBase.h"
 
+SqlBase::~SqlBase()
+{
+
+}
+
 QString SqlBase::getTypesString(SqlBase::tableColumns table)
 {
     QString result = "";

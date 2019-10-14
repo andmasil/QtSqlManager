@@ -5,6 +5,11 @@ SqLite::SqLite()
 
 }
 
+SqLite::~SqLite()
+{
+
+}
+
 bool SqLite::connectDatabase(databaseInfo info)
 {
     bool result = false;
@@ -33,8 +38,8 @@ void SqLite::createTable(QString name, SqlBase::tableColumns table, bool uniqueV
     if (uniqueValues)
     {
         command = QString("CREATE TABLE %1 (%2, UNIQUE(%3))").arg(name)
-                                                              .arg(getTypesString(table))
-                                                              .arg(getColumnsString(table));
+                .arg(getTypesString(table))
+                .arg(getColumnsString(table));
     }
     else
     {
@@ -48,17 +53,18 @@ void SqLite::createTable(QString name, SqlBase::tableColumns table, bool uniqueV
     {
         qDebug() << query.lastError();
     }
-    m_lastCreatedTableName = name;
+}
+
+void SqLite::dropTable(QString name)
+{
+    QString command = QString("DROP TABLE %1").arg(name);
+    QSqlQuery query(command);
+    qDebug() << "Query exec: " << command;
 }
 
 bool SqLite::insertValue(SqlBase::tableRow rowValues, QString tableName)
 {
     bool result = false;
-
-    if (nullptr == tableName)
-    {
-        tableName = m_lastCreatedTableName;
-    }
 
     unsigned int paramsNumber = rowValues.completeRow.size();
     if ((0 < paramsNumber) && (paramsNumber == getColumnNumber(tableName)))
@@ -71,7 +77,7 @@ bool SqLite::insertValue(SqlBase::tableRow rowValues, QString tableName)
 
         for (unsigned int i = 0; i < paramsNumber; ++i)
         {
-            query.bindValue(i, rowValues.completeRow.at(i));
+            query.bindValue(static_cast<int>(i), rowValues.completeRow.at(i));
         }
 
         if (!query.exec())
@@ -99,15 +105,9 @@ bool SqLite::removeValue(QString column, QString value, QString tableName)
 
     if (isExist(column, value, tableName))
     {
-        if (0 == tableName)
-        {
-            tableName = m_lastCreatedTableName;
-        }
-
         command = QString("DELETE FROM %1 WHERE %2 = (\"%3\")").arg(tableName)
-                                                               .arg(column)
-                                                               .arg(value);
-
+                .arg(column)
+                .arg(value);
         ret = query.exec(command);
         if (!ret)
         {
@@ -121,12 +121,15 @@ bool SqLite::removeValue(QString column, QString value, QString tableName)
 
 bool SqLite::removeValue(int index, QString tableName)
 {
-
+    Q_UNUSED(index)
+    Q_UNUSED(tableName)
+    return false;
 }
 
 bool SqLite::removeAllData(QString tableName)
 {
     QSqlQuery removeQuery;
+    bool ret = false;
     removeQuery.prepare("DELETE FROM " + tableName);
     if (!removeQuery.exec())
     {
@@ -135,44 +138,47 @@ bool SqLite::removeAllData(QString tableName)
     else
     {
         qDebug() << "removed all data from " << tableName;
+        ret = true;
     }
+    return ret;
 }
 
 SqlBase::tableRow SqLite::getValue(QString column, QString value, QString tableName)
 {
-
+    Q_UNUSED(column)
+    Q_UNUSED(value)
+    Q_UNUSED(tableName)
+    return SqlBase::tableRow();
 }
 
 SqlBase::tableRow SqLite::getValue(int index, QString tableName)
 {
-
+    Q_UNUSED(index)
+    Q_UNUSED(tableName)
+    return SqlBase::tableRow();
 }
 
 SqlBase::dataTable SqLite::getAllData(QString tableName)
 {
     dataTable completeTable;
     tableRow row;
-    if (0 == tableName)
-    {
-        tableName = m_lastCreatedTableName;
-    }
     QString command = QString("SELECT * FROM %1").arg(tableName);
     QSqlQuery query(command);
-
-
-
     QString tableColumnsName = getColumnNames(tableName);
     QString firstTableColumnName = tableColumnsName.left(tableColumnsName.indexOf(','));
     int firstItem = query.record().indexOf(firstTableColumnName);
 
-    while (query.next())
+    if (firstItem >= 0)
     {
-        row = tableRow();
-        for (int i = 0; i < getColumnNumber(tableName); ++i)
+        while (query.next())
         {
-            row.completeRow.push_back(query.value(firstItem+i).toString());
+            row = tableRow();
+            for (int i = 0; i < getColumnNumber(tableName); ++i)
+            {
+                row.completeRow.push_back(query.value(firstItem+i).toString());
+            }
+            completeTable.completeData.push_back(row);
         }
-        completeTable.completeData.push_back(row);
     }
 
     return completeTable;
@@ -180,7 +186,8 @@ SqlBase::dataTable SqLite::getAllData(QString tableName)
 
 SqlBase::tableColumns SqLite::getTableHeader(QString tableName)
 {
-
+    Q_UNUSED(tableName)
+    return SqlBase::tableColumns();
 }
 
 bool SqLite::isExist(QString column, QString value, QString tableName)
@@ -189,14 +196,9 @@ bool SqLite::isExist(QString column, QString value, QString tableName)
     QString command;
     QSqlQuery query;
 
-    if (0 == tableName)
-    {
-        tableName = m_lastCreatedTableName;
-    }
     command = QString("SELECT %2 FROM %1 WHERE %2 = (\"%3\")").arg(tableName)
-                                                              .arg(column)
-                                                              .arg(value);
-
+            .arg(column)
+            .arg(value);
     if (query.exec(command))
     {
         if (query.next())
@@ -214,39 +216,40 @@ bool SqLite::isExist(QString column, QString value, QString tableName)
 
 QString SqLite::getType(SqlBase::EItemType type, int textMaxLenght)
 {
+    Q_UNUSED(textMaxLenght)
     QString result;
     switch (type)
     {
-        case ID:
-        {
-            result = "INTEGER PRIMARY KEY AUTOINCREMENT";
-            break;
-        }
-        case BOOL:
-        {
-            result = "BOOLEAN";
-            break;
-        }
-        case FLOAT:
-        {
-            result = "REAL";
-            break;
-        }
-        case INTEGER:
-        {
-            result = "INTEGER";
-            break;
-        }
-        case TEXT:
-        {
-            result = "TEXT";
-            break;
-        }
-        case DATE:
-        {
-            result = "";
-            break;
-        }
+    case ID:
+    {
+        result = "INTEGER PRIMARY KEY AUTOINCREMENT";
+        break;
+    }
+    case BOOL:
+    {
+        result = "BOOLEAN";
+        break;
+    }
+    case FLOAT:
+    {
+        result = "REAL";
+        break;
+    }
+    case INTEGER:
+    {
+        result = "INTEGER";
+        break;
+    }
+    case TEXT:
+    {
+        result = "TEXT";
+        break;
+    }
+    case DATE:
+    {
+        result = "";
+        break;
+    }
     }
     return result;
 }

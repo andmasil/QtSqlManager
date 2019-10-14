@@ -16,6 +16,7 @@ private slots:
     void cleanupTestCase();
     void connectDatabaseTest();
     void createTableTest();
+    void dropTableTest();
     void insertValueTest();
 
 private:
@@ -83,6 +84,18 @@ void SqLiteTests::createTableTest()
 
     QVERIFY(m_sqlite.insertValue(data, tableName));
     QVERIFY(m_sqlite.insertValue(data, tableName));\
+}
+
+void SqLiteTests::dropTableTest()
+{
+    SqlBase::tableColumns table;
+    table.tableHeader.push_back(SqlBase::singleColumn(SqlBase::ID, "id"));
+    table.tableHeader.push_back(SqlBase::singleColumn(SqlBase::TEXT, "name"));
+
+    m_sqlite.createTable("toRemove", table, false);
+
+    m_sqlite.dropTable("toRemove");
+    m_sqlite.dropTable("toRemove2");
 }
 
 void SqLiteTests::insertValueTest()

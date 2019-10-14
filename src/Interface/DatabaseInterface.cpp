@@ -4,6 +4,7 @@
 
 DatabaseInterface::DatabaseInterface(DatabaseInterface::DatabaseDrivers driver, SqlBase::databaseInfo dbInfo)
 {
+    Q_UNUSED(dbInfo)
     switch (driver)
     {
         case QSQLITE:
