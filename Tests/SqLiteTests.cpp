@@ -1,36 +1,8 @@
-#include <QtTest>
-#include "SqLite.h"
+#include "SqLiteTests.h"
 
 const QString DEFAULT_TEST_TABLE = "testTable";
 
-class SqLiteTests : public QObject
-{
-    Q_OBJECT
-
-public:
-    SqLiteTests();
-    ~SqLiteTests();
-
-private slots:
-    void initTestCase();
-    void cleanupTestCase();
-    void connectDatabaseTest();
-    void createTableTest();
-    void dropTableTest();
-    void insertValueTest();
-
-private:
-    SqLite m_sqlite;
-    SqlBase::databaseInfo m_dbInfo;
-
-};
-
 SqLiteTests::SqLiteTests()
-{
-
-}
-
-SqLiteTests::~SqLiteTests()
 {
 
 }
@@ -124,7 +96,3 @@ void SqLiteTests::insertValueTest()
     QVERIFY(m_sqlite.isExist("name", "danny", DEFAULT_TEST_TABLE));
     QVERIFY(m_sqlite.isExist("number", "123", DEFAULT_TEST_TABLE));
 }
-
-QTEST_APPLESS_MAIN(SqLiteTests)
-
-#include "tst_sqlitetests.moc"
